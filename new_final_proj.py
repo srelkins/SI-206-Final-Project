@@ -5,6 +5,7 @@ import sys
 import codecs
 import sqlite3
 import csv
+from secrets import *
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
 #NEED VIRTUAL ENVIRONMENT - SEE LECTURE 23
 #re-generate your requirements.txt as a final step before submitting your project. Just in case.
@@ -41,7 +42,7 @@ def make_request_using_cache(url, params):
         fw.close()
         return CACHE_DICTION[unique_ident]
 
-TMDB_API_KEY = '0f24da510fba792594284d0388931a9b'
+TMDB_API_KEY = api_key
 
 #Function for getting data from TMDB Api:
 def get_tmdb_data():
