@@ -66,6 +66,86 @@ def get_tmdb_data():
 
 #get_tmdb_data()
 
+
+
+#Scraping:
+try:
+    cache_file = open("cache_halloween.json", 'r')
+    cache_contents = cache_file.read()
+    CACHE_HTML = json.loads(cache_contents)
+    cache_file.close()
+except:
+    CACHE_HTML = {}
+
+def make_scrape_request_using_cache(url):
+    unique_ident = url
+    if unique_ident in CACHE_HTML:
+        print("Getting cached data for halloween costumes...")
+        return CACHE_HTML[unique_ident]
+    else:
+        print("Making a request for new data for halloween costumes...")
+        resp = requests.get(url)
+        CACHE_HTML[unique_ident] = resp.text
+        dumped_json_cache = json.dumps(CACHE_HTML)
+        fw = open("cache_halloween.json", "w")
+        fw.write(dumped_json_cache)
+        fw.close()
+        return CACHE_HTML[unique_ident]
+
+#Class:
+class HalloweenCostumes:
+    def __init__(self, header="No header", costume_name="no costume name"):
+        self.header = header
+        self.costume_name = costume_name
+
+def scrape_halloween_costumes():
+    header_list = []
+    costume_list = []
+
+    new_list = []
+
+    base_url = "https://nrf.com/media/press-releases/trading-crowns-capes-superhero-is-top-choice-halloween"
+    main_page_text = make_scrape_request_using_cache(base_url)
+    main_page_soup = BeautifulSoup(main_page_text, 'html.parser')
+    content_div = main_page_soup.find_all('div', class_='field field-name-field-db-paragraph field-type-text-long field-label-hidden')
+
+    with open('costumes.csv', 'w') as csvDataFile:
+        my_writer = csv.writer(csvDataFile)
+
+        for x in content_div:
+            all_headers = x.find_all("h3") #list of h3 tags
+            for header in all_headers:
+                try:
+                    header_text = header.text
+                    header_list.append(header_text)
+                    #print(header_text)
+                except:
+                    pass
+
+            all_costumes = x.find_all("ol") #list of costumes
+            for costume in all_costumes:
+                try:
+                    costume_text = costume.text
+                    costume_list.append(costume_text)
+                    #print(costume_list)
+                except:
+                    pass
+
+            course = [header_text, costume_text]
+            new_list.append(course)
+            #print(new_list)
+
+        # for row in new_list:
+        #     my_writer.writerow(row)
+
+
+        my_writer.writerow(header_list)
+        my_writer.writerow(costume_list)
+
+    #costume = HalloweenCostumes(header=all_headers, costume_name=all_costumes)
+
+scrape_halloween_costumes()
+
 #Reading data into new database:
 def init_db():
     DBNAME = 'movies.db'
@@ -246,81 +326,6 @@ insert_age_group_data()
 #use omdb api to obtain data on kids movies that came out in 2016 (PG and PG-13)
 #compare to most popular halloween costumes in 2016
 
-#Scraping:
-try:
-    cache_file = open("cache_halloween.json", 'r')
-    cache_contents = cache_file.read()
-    CACHE_HTML = json.loads(cache_contents)
-    cache_file.close()
-except:
-    CACHE_HTML = {}
-
-def make_scrape_request_using_cache(url):
-    unique_ident = url
-    if unique_ident in CACHE_HTML:
-        print("Getting cached data for halloween costumes...")
-        return CACHE_HTML[unique_ident]
-    else:
-        print("Making a request for new data for halloween costumes...")
-        resp = requests.get(url)
-        CACHE_HTML[unique_ident] = resp.text
-        dumped_json_cache = json.dumps(CACHE_HTML)
-        fw = open("cache_halloween.json", "w")
-        fw.write(dumped_json_cache)
-        fw.close()
-        return CACHE_HTML[unique_ident]
-
-#Class:
-class HalloweenCostumes:
-    def __init__(self, header="No header", costume_name="no costume name"):
-        self.header = header
-        self.costume_name = costume_name
-
-def scrape_halloween_costumes():
-    header_list = []
-    costume_list = []
-
-    new_list = []
-
-    base_url = "https://nrf.com/media/press-releases/trading-crowns-capes-superhero-is-top-choice-halloween"
-    main_page_text = make_scrape_request_using_cache(base_url)
-    main_page_soup = BeautifulSoup(main_page_text, 'html.parser')
-    content_div = main_page_soup.find_all('div', class_='field field-name-field-db-paragraph field-type-text-long field-label-hidden')
-
-    with open('costumes.csv', 'w') as csvDataFile:
-        my_writer = csv.writer(csvDataFile)
-
-        for x in content_div:
-            all_headers = x.find_all("h3") #list of h3 tags
-            for header in all_headers:
-                try:
-                    header_text = header.text
-                    header_list.append(header_text)
-                    #print(header_text)
-                except:
-                    pass
-
-            all_costumes = x.find_all("ol") #list of costumes
-            for costume in all_costumes:
-                try:
-                    costume_text = costume.text
-                    costume_list.append(costume_text)
-                    #print(costume_list)
-                except:
-                    pass
-
-            course = [header_text, costume_text]
-            new_list.append(course)
-            #print(new_list)
-
-        # for row in new_list:
-        #     my_writer.writerow(row)
-
-
-        my_writer.writerow(header_list)
-        my_writer.writerow(costume_list)
-
-    #costume = HalloweenCostumes(header=all_headers, costume_name=all_costumes)
 
 #Questions for Matt:
 #2. How to properly use Class for scraping?
@@ -328,8 +333,6 @@ def scrape_halloween_costumes():
     #3 tables: halloween costumes, movies, age_group
     #reference age_group ID in halloween costume table
     #age group table - hard code (make by self)
-
-scrape_halloween_costumes()
 
 #Plotly Bar Charts
 #Plan:
