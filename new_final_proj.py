@@ -42,6 +42,7 @@ def make_request_using_cache(url, params):
         fw.close()
         return CACHE_DICTION[unique_ident]
 
+#Getting API key from secrets.py:
 TMDB_API_KEY = api_key
 
 #Function for getting data from TMDB Api:
@@ -63,7 +64,7 @@ def get_tmdb_data():
     top_2016_movies.append(response_page_5)
     #print(top_2016_movies)
 
-get_tmdb_data()
+#get_tmdb_data()
 
 #Reading data into new database:
 def init_db():
