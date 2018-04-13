@@ -10,7 +10,7 @@ class TestDatabaseTables(unittest.TestCase):
         results = cur.execute(sql)
         result_list = results.fetchall()
         self.assertIn(('Zootopia',), result_list)
-        self.assertEqual(len(result_list), 100)
+        self.assertEqual(len(result_list), 120)
         #above two statements PASS
 
         sql = 'SELECT ReleaseDate FROM Movies'
@@ -18,7 +18,7 @@ class TestDatabaseTables(unittest.TestCase):
         result_list = results.fetchall()
         self.assertIn(('2016-03-25',), result_list)
         self.assertEqual(result_list[2], ('2016-05-06',))
-        self.assertEqual(result_list[-1], ('2016-06-24',))
+        self.assertEqual(result_list[-1], ('2016-01-15',))
         #above three statements PASS
 
         conn.close()
@@ -48,18 +48,19 @@ class TestDatabaseTables(unittest.TestCase):
 
 class TestDataAccess(unittest.TestCase):
     def test_tmdb_data_access(self):
-        self.assertIn("\"page\":5,", cache_tmdb.json)
+        self.assertIn('\"page\":5,', 'cache_tmdb.json')
+        #call function, assert length of response > 0
 
     def test_scrape_data_access(self):
         pass
         #same for scraped cache file
 
-class TestDataProcessing(unittest.TestCase):
-    def test_graphs_returned:
-        pass
-    def user_input_function:
-        if user_input == "movies 10":
-            self.assertEqual(len(result_list), 10)
+# class TestDataProcessing(unittest.TestCase):
+#     def test_graphs_returned:
+#         pass
+#     def user_input_function:
+#         if user_input == "movies 10":
+#             self.assertEqual(len(result_list), 10)
 
 
 unittest.main(verbosity=2)

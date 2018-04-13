@@ -1,42 +1,40 @@
-Children's Costumes,Adults 18-34-years-old,Adults 35+,Pets
-"Action/Superhero
-Princess
-Animal (Cat, Dog, Lion, Monkey, etc.)
-Batman Character
-Star Wars Character
-Tie: Witch AND DC Superhero (excl. Batman)
-Frozen Character (Anna, Elsa, Olaf)
-Marvel Superhero (excl. Spiderman)
-Zombie
-Spiderman
-","Batman Character (Batman, Harley Quinn, The Joker, etc.)
-Witch
-Animal (Cat, Dog, Bunny, etc.)
-Tie: Marvel Superhero (Deadpool, Spiderman, etc.) AND DC Superhero (Wonder Woman, Superman, excl. Batman)
-Vampire
-Video Game Character
-Slasher Movie Villain (Freddy, Jason, Michael Myers, etc.)
-Pirate
-Star Wars Character
-Zombie
-","Witch
-Pirate
-Political (Trump, Clinton, etc.)
-Vampire
-Batman Character (Batman, Catwoman, etc.)
-Animal (Cat, Dog, Bunny, etc.)
-Tie: DC Superhero (Superman, Wonder Woman, excl. Batman) and Star Wars Character
-Tie: Ghost and Zombie
-Scary Costume/Mask
-Marvel Superhero (Iron Man, Hulk, Spiderman, etc.) 
-","Pumpkin
-Hot Dog
-Bumble Bee
-Tie: Lion and Star Wars Character
-Devil
-Batman Character
-Witch
-Superman
-Action/Superhero
-Cat
-"
+Action/Superhero,Children's Costumes
+Princess,Children's Costumes
+"Animal (Cat, Dog, Lion, Monkey, etc.)",Children's Costumes
+Batman Character,Children's Costumes
+Star Wars Character,Children's Costumes
+Tie: Witch AND DC Superhero (excl. Batman),Children's Costumes
+"Frozen Character (Anna, Elsa, Olaf)",Children's Costumes
+Marvel Superhero (excl. Spiderman),Children's Costumes
+Zombie,Children's Costumes
+Spiderman,Children's Costumes
+"Batman Character (Batman, Harley Quinn, The Joker, etc.)",Adults 18-34-years-old
+Witch,Adults 18-34-years-old
+"Animal (Cat, Dog, Bunny, etc.)",Adults 18-34-years-old
+"Tie: Marvel Superhero (Deadpool, Spiderman, etc.) AND DC Superhero (Wonder Woman, Superman, excl. Batman)",Adults 18-34-years-old
+Vampire,Adults 18-34-years-old
+Video Game Character,Adults 18-34-years-old
+"Slasher Movie Villain (Freddy, Jason, Michael Myers, etc.)",Adults 18-34-years-old
+Pirate,Adults 18-34-years-old
+Star Wars Character,Adults 18-34-years-old
+Zombie,Adults 18-34-years-old
+Witch,Adults 35+
+Pirate,Adults 35+
+"Political (Trump, Clinton, etc.)",Adults 35+
+Vampire,Adults 35+
+"Batman Character (Batman, Catwoman, etc.)",Adults 35+
+"Animal (Cat, Dog, Bunny, etc.)",Adults 35+
+"Tie: DC Superhero (Superman, Wonder Woman, excl. Batman) and Star Wars Character",Adults 35+
+Tie: Ghost and Zombie,Adults 35+
+Scary Costume/Mask,Adults 35+
+"Marvel Superhero (Iron Man, Hulk, Spiderman, etc.) ",Adults 35+
+Pumpkin,Pets
+Hot Dog,Pets
+Bumble Bee,Pets
+Tie: Lion and Star Wars Character,Pets
+Devil,Pets
+Batman Character,Pets
+Witch,Pets
+Superman,Pets
+Action/Superhero,Pets
+Cat,Pets

@@ -11,7 +11,7 @@ sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
 #re-generate your requirements.txt as a final step before submitting your project. Just in case.
 #make GitHub repo and README file explaining how to run project
 
-#Caching for OMDB data:
+#Caching for TMDB data:
 try:
     cache_file = open('cache_tmdb.json', 'r')
     cache_contents = cache_file.read()
@@ -114,33 +114,45 @@ def scrape_halloween_costumes():
 
         for x in content_div:
             all_headers = x.find_all("h3") #list of h3 tags
+            header_text = ""
+            costume_text = ""
+
             for header in all_headers:
                 try:
                     header_text = header.text
-                    header_list.append(header_text)
-                    #print(header_text)
                 except:
                     pass
 
-            all_costumes = x.find_all("ol") #list of costumes
+            all_costumes = x.find_all("li") #list of costumes
             for costume in all_costumes:
                 try:
                     costume_text = costume.text
-                    costume_list.append(costume_text)
-                    #print(costume_list)
+                    # print("-----------")
+                    # print(costume_text)
+                    # print("---------------")
                 except:
                     pass
+                my_writer.writerow((costume_text,header_text))
 
-            course = [header_text, costume_text]
-            new_list.append(course)
-            #print(new_list)
-
+            #course = [header_text, costume_text]
+        # new_list.append(header_list)
+        # new_list.append(costume_list)
+        # print(new_list)
+        #
         # for row in new_list:
         #     my_writer.writerow(row)
 
 
-        my_writer.writerow(header_list)
-        my_writer.writerow(costume_list)
+        #my_writer.writerow("Costume Name, Age Group")
+        #
+        # for val in costume_list:
+        #     my_writer.writerow([val])
+        #
+        # for val in header_list:
+        #     my_writer.writerow([val])
+
+        #my_writer.writerow(header_list)
+        #my_writer.writerow(costume_list)
 
     #costume = HalloweenCostumes(header=all_headers, costume_name=all_costumes)
 
@@ -255,14 +267,12 @@ def insert_age_group_data():
 
         for row in csvReader:
             print(row)
-        print("-----------------------------------------------")
-        #print(" ".join(row))
-        #     insertion = (None, row[0])
-        #     statement = 'INSERT INTO "AgeGroup" '
-        #     statement += 'VALUES (?, ?) '
-        #     cur.execute(statement, insertion)
-        #     conn.commit()
-        # conn.close()
+            insertion = (None, row[0])
+            statement = 'INSERT INTO "AgeGroup" '
+            statement += 'VALUES (?, ?) '
+            cur.execute(statement, insertion)
+            conn.commit()
+        conn.close()
 
 
 #Inserting AgeGroup.Id into Costumes.AgeGroupId
