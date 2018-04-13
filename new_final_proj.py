@@ -127,9 +127,6 @@ def scrape_halloween_costumes():
             for costume in all_costumes:
                 try:
                     costume_text = costume.text
-                    # print("-----------")
-                    # print(costume_text)
-                    # print("---------------")
                 except:
                     pass
                 my_writer.writerow((costume_text,header_text))
@@ -156,7 +153,7 @@ def scrape_halloween_costumes():
 
     #costume = HalloweenCostumes(header=all_headers, costume_name=all_costumes)
 
-scrape_halloween_costumes()
+#scrape_halloween_costumes()
 
 #Reading data into new database:
 def init_db():
@@ -261,46 +258,31 @@ def insert_age_group_data():
 
     print("Inserting age group data")
 
-    with open(COSTUMES_CSV, 'r') as csvDataFile:
-        csvReader = csv.reader(csvDataFile)
-        #next(csvReader, None)
+    costume_age_groups = ["Children's Costumes", "Adults 18-34-years-old", "Adults 35+", "Pets"]
 
-        for row in csvReader:
-            print(row)
-            insertion = (None, row[0])
-            statement = 'INSERT INTO "AgeGroup" '
-            statement += 'VALUES (?, ?) '
-            cur.execute(statement, insertion)
-            conn.commit()
-        conn.close()
-
-
-#Inserting AgeGroup.Id into Costumes.AgeGroupId
-def foreign_key_insertion():
-    conn = sqlite3.connect('movies.db')
-    cur = conn.cursor()
-    query = "SELECT * FROM AgeGroup"
-    cur.execute(query)
-    costume_mapping = {}
-    for x in cur:
-        age_id = x[0] #Age group id
-        name = x[1] #Age group (children, adult, etc.)
-        costume_mapping[name] = age_id
-        conn.commit()
-
-    for x in costume_mapping:
-        name = x
-        age_id = costume_mapping[x]
-        insert = (age_id, name)
-        statement += 'SET AgeGroupId =? '
-        statement += 'WHERE AgeGroup.Id =?'
-        cur.execute(statement, insert)
+    for age in costume_age_groups:
+        insertion = (None, age)
+        statement = 'INSERT INTO "AgeGroup" '
+        statement += 'VALUES (?, ?) '
+        cur.execute(statement, insertion)
         conn.commit()
     conn.close()
 
 
 #Inserting data into Costumes table:
 def insert_csv_data():
+    conn = sqlite3.connect('movies.db')
+    cur = conn.cursor()
+    query = "SELECT * FROM AgeGroup"
+    cur.execute(query)
+
+    costume_mapping = {}
+    for x in cur:
+        age_id = x[0] #Age group id
+        name = x[1] #Age group (children, adult, etc.)
+        costume_mapping[name] = age_id
+    conn.commit()
+
     try:
         conn = sqlite3.connect('movies.db')
         cur = conn.cursor()
@@ -309,32 +291,25 @@ def insert_csv_data():
 
     print("Inserting csv data")
 
-    with open('costumes.csv', encoding = 'utf-8') as csvDataFile:
+    with open('costumes.csv', 'r', encoding = "latin-1") as csvDataFile:
         csvReader = csv.reader(csvDataFile)
         # next(csvReader, None)
 
         for row in csvReader:
+            if len(row) < 1:
+                continue
             age_group = ""
-            insertion = (None, row[0], age_group)
+            insertion = (None, row[0], costume_mapping[row[1]])
             statement_csv = 'INSERT INTO "Costumes" '
             statement_csv += 'VALUES (?, ?, ?) '
             cur.execute(statement_csv, insertion)
             conn.commit()
         conn.close()
 
-
-
 init_db()
 insert_json_data()
 insert_age_group_data()
-# foreign_key_insertion()
-# insert_csv_data()
-
-
-
-#Plan:
-#use omdb api to obtain data on kids movies that came out in 2016 (PG and PG-13)
-#compare to most popular halloween costumes in 2016
+insert_csv_data()
 
 
 #Questions for Matt:
@@ -343,6 +318,7 @@ insert_age_group_data()
     #3 tables: halloween costumes, movies, age_group
     #reference age_group ID in halloween costume table
     #age group table - hard code (make by self)
+
 
 #Plotly Bar Charts
 #Plan:
