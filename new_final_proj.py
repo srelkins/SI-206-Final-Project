@@ -9,7 +9,6 @@ from secrets import *
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
 #NEED VIRTUAL ENVIRONMENT - SEE LECTURE 23
 #re-generate your requirements.txt as a final step before submitting your project. Just in case.
-#make GitHub repo and README file explaining how to run project
 
 #Caching for TMDB data:
 try:
@@ -176,7 +175,7 @@ def init_db():
         'VoteAverage' TEXT NOT NULL,
         'Title' TEXT NOT NULL,
         'Popularity' TEXT NOT NULL,
-        'VoteCount' TEXT NOT NULL,
+        'VoteCount' Integer NOT NULL,
         'Overview' TEXT NOT NULL,
         'ReleaseDate' TEXT NOT NULL
          );
@@ -239,7 +238,7 @@ def insert_json_data():
         for movie in results:
             #print(movie["title"])
             #print("------------------------------")
-            insertion = (None, movie['vote_average'], movie['title'], movie['popularity'], movie['vote_count'], movie['overview'], movie['release_date'])
+            insertion = (None, movie['vote_average'], movie['title'], movie['popularity'], int(movie['vote_count']), movie['overview'], movie['release_date'])
             statement_json = 'INSERT INTO "Movies" '
             statement_json += 'VALUES (?, ?, ?, ?, ?, ?, ?) '
             cur.execute(statement_json, insertion)
@@ -326,59 +325,233 @@ insert_csv_data()
     #of superhero costumes in children costumes, 3 is for adults 18-34,
     #4 is for adults 35+
     #y-axis is percentage (percent of movies that are superhero, percent of )
-#import plotly.plotly as py
-#from plotly.graph_objs import *
-#plotly.tools.set_credentials_file(username='srelkins', api_key='3hBkfZ0h1qeAtXUTTZhU')
-#import plotly.graph_objs as go
 
 import plotly.plotly as py
 import plotly.graph_objs as go
 
-def movies_graph():
-    trace1 = go.Bar(
-        x=['Superhero Movies', 'Princess Movies', 'Animal Movies', 'Political Movies'],
-        y=[20, 14, 23, 20],
-        name='SF Zoo'
+def movies_average_ratings_graph():
+    movie_votes = []
+    movie_titles = []
+
+    conn = sqlite3.connect('movies.db')
+    cur = conn.cursor()
+    query = "SELECT VoteAverage, Title FROM Movies ORDER BY VoteAverage DESC LIMIT 10 "
+    cur.execute(query)
+
+    for x in cur:
+        movie_votes.append(x[0])
+        movie_titles.append(x[1])
+
+    trace0 = go.Bar(
+    x=movie_titles,
+    y=movie_votes,
+    marker=dict(
+        color=['rgba(222,45,38,0.8)', 'rgba(222,45,38,0.8)',
+               'rgba(222,45,38,0.8)', 'rgba(222,45,38,0.8)',
+               'rgba(222,45,38,0.8)', 'rgba(222,45,38,0.8)',
+               'rgba(222,45,38,0.8)', 'rgba(222,45,38,0.8)',
+               'rgba(222,45,38,0.8)', 'rgba(222,45,38,0.8)',]),
     )
 
-
-    data = [trace1]
+    data = [trace0]
     layout = go.Layout(
-        barmode='group'
+        title='Top 10 Highest Rated Movies for 2016 (By Average Rating)',
     )
 
     fig = go.Figure(data=data, layout=layout)
-    py.plot(fig, filename='grouped-bar')
+    py.plot(fig, filename='color-bar')
 
-def princess_graph():
-    pass
+def movies_most_popular_graph():
+    movie_popularity = []
+    movie_titles = []
 
-def animal_graph():
-    pass
+    conn = sqlite3.connect('movies.db')
+    cur = conn.cursor()
+    #query = "SELECT Popularity, Title FROM Movies LIMIT 10 "
+    query = "SELECT Popularity, Title FROM Movies ORDER BY Popularity DESC LIMIT 10 "
 
-def political_graph():
-    pass
+    cur.execute(query)
 
-#movies_graph()
+    for x in cur:
+        movie_popularity.append(x[0])
+        movie_titles.append(x[1])
+
+    trace0 = go.Bar(
+    x=movie_titles,
+    y=movie_popularity,
+    marker=dict(
+        color=['rgb(8,48,107)', 'rgb(8,48,107)', 'rgb(8,48,107)', 'rgb(8,48,107)',
+        'rgb(8,48,107)', 'rgb(8,48,107)', 'rgb(8,48,107)', 'rgb(8,48,107)', 'rgb(8,48,107)', 'rgb(8,48,107)',]),
+    )
+
+    data = [trace0]
+    layout = go.Layout(
+        title='Top 10 Most Popular Movies of 2016',
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    py.plot(fig, filename='color-bar')
+
+def movies_vote_count_graph():
+    movie_votes = []
+    movie_titles = []
+
+    conn = sqlite3.connect('movies.db')
+    cur = conn.cursor()
+    query = "SELECT VoteCount, Title FROM Movies ORDER BY VoteCount DESC LIMIT 10 "
+    #query = "SELECT VoteAverage, Title FROM Movies ORDER BY VoteAverage DESC LIMIT 10 "
+    cur.execute(query)
+
+    for x in cur:
+        movie_votes.append(x[0])
+        movie_titles.append(x[1])
+
+    trace0 = go.Bar(
+    x=movie_titles,
+    y=movie_votes,
+    marker=dict(
+        color=['rgba(50,171,96,0.7)', 'rgba(50,171,96,0.7)',
+               'rgba(50,171,96,0.7)', 'rgba(50,171,96,0.7)',
+               'rgba(50,171,96,0.7)', 'rgba(50,171,96,0.7)',
+               'rgba(50,171,96,0.7)', 'rgba(50,171,96,0.7)',
+               'rgba(50,171,96,0.7)', 'rgba(50,171,96,0.7)',]),
+    )
+
+    data = [trace0]
+    layout = go.Layout(
+        title='Top 10 Movies of 2016 By Vote Count',
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    py.plot(fig, filename='color-bar')
+
+# def animal_graph():
+#     pass
+#
+# def political_graph():
+#     pass
+
+#movies_average_ratings_graph()
+#movies_most_popular_graph()
+#movies_vote_count_graph()
 
 
 #Interactive Command Line:
-# user_input = input("Please enter a command or 'help' for more options: ")
-# while user_input != 'exit':
-#     if 'graph' in user_input[0:5]:
+print("----------------------------------------------------------")
+print("-------------- Welcome to my final project! --------------")
+print("----------------------------------------------------------")
+
+user_input = input("Please enter a command or 'help' for more options: ")
+while user_input != 'exit':
+    #First data visualization:
+    if user_input == "graph top 10 movies ratings":
+        movies_average_ratings_graph()
 #         print graph superhero
 #         print graph princess
 #         print graph animal
 #         print graph political
-#     elif 'movies' in user_input[0:5]:
-#         print top however many movies the user wants
-#     elif 'costume' in user_input[0:6]:
-#         print top 10 costumes for whichever group is specified
-#     elif 'help' in user_input[0:3]:
-#         print("Enter 'graph' and 'superhero', 'princess', 'animal', or 'political' to see the graph for respective movies and costumes. ")
-#         print("Enter 'movie' and a number to see the top rated movies for 2016. ")
-#         print("Enter 'costume' and a group name to see the top ten costumes for that group. ")
-#         print("Enter 'exit' to end the program. ")
-#         print a list of possible commands + explanations
-#     else:
-#         print("I'm sorry, I don't understand. Please enter a valid command. ")
+    #Second data visualization:
+    elif user_input == "graph top 10 movies popularity":
+        movies_most_popular_graph()
+    #Third data visualization:
+    elif user_input == "graph top 10 movies vote count":
+        movies_vote_count_graph()
+    #Fourth Data Visualization:
+    elif 'movies' in user_input[0:6]:
+        result_number = str(user_input[7])
+        movies_list = []
+        conn = sqlite3.connect('movies.db')
+        cur = conn.cursor()
+        query = "SELECT Title FROM Movies ORDER BY Popularity DESC "
+        cur.execute(query)
+
+        for x in cur:
+            movies_list.append(x[0])
+
+        movies_list = movies_list[result_number]
+
+        for x in range(len(movies_list)):
+            print(str(x + 1) + ". " + movies_list[x].__str__())
+
+        print("\n")
+
+        #print top however many movies the user wants
+
+    elif user_input == "costumes children":
+        childrens_costumes = []
+
+        conn = sqlite3.connect('movies.db')
+        cur = conn.cursor()
+        query = "SELECT CostumeName FROM Costumes WHERE AgeGroupId = 1 "
+        cur.execute(query)
+
+        for x in cur:
+            childrens_costumes.append(x[0])
+
+        for x in range(len(childrens_costumes)):
+            print(str(x + 1) + ". " + childrens_costumes[x].__str__())
+
+        print("\n")
+
+    elif user_input == "costumes adults 18-34":
+        adults_18_34_costumes = []
+
+        conn = sqlite3.connect('movies.db')
+        cur = conn.cursor()
+        query = "SELECT CostumeName FROM Costumes WHERE AgeGroupId = 2 "
+        cur.execute(query)
+
+        for x in cur:
+            adults_18_34_costumes.append(x[0])
+
+        for x in range(len(adults_18_34_costumes)):
+            print(str(x + 1) + ". " + adults_18_34_costumes[x].__str__())
+
+        print("\n")
+
+    elif user_input == "costumes adults 35+":
+        adults_35_costumes = []
+
+        conn = sqlite3.connect('movies.db')
+        cur = conn.cursor()
+        query = "SELECT CostumeName FROM Costumes WHERE AgeGroupId = 3 "
+        cur.execute(query)
+
+        for x in cur:
+            adults_35_costumes.append(x[0])
+
+        for x in range(len(adults_35_costumes)):
+            print(str(x + 1) + ". " + adults_35_costumes[x].__str__())
+
+        print("\n")
+
+    elif user_input == "costumes pets":
+        pets_costumes = []
+
+        conn = sqlite3.connect('movies.db')
+        cur = conn.cursor()
+        query = "SELECT CostumeName FROM Costumes WHERE AgeGroupId = 4 "
+        cur.execute(query)
+
+        for x in cur:
+            pets_costumes.append(x[0])
+
+        for x in range(len(pets_costumes)):
+            print(str(x + 1) + ". " + pets_costumes[x].__str__())
+
+        print("\n")
+
+    elif 'help' in user_input[0:4]:
+        #print("Enter 'graph' and 'superhero', 'princess', 'animal', or 'political' to see the graph for respective movies and costumes. ")
+        print("Enter 'movie' and a number to see the most popular movies for 2016. ")
+        print("Enter 'costume' and a group name to see the top ten costumes for that group. ")
+        print("Enter 'exit' to end the program. ")
+        break
+        #print a list of possible commands + explanations
+    elif user_input == "exit":
+        print("Bye!")
+        break
+    else:
+        print("I'm sorry, I don't understand. Please enter a valid command. ")
+
+    user_input = input("Please enter a command or 'help' for more options: ")

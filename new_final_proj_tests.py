@@ -1,5 +1,6 @@
 import unittest
 from new_final_proj import *
+#from cache_tmdb.json import *
 
 class TestDatabaseTables(unittest.TestCase):
     def test_movies_table(self):
@@ -27,7 +28,7 @@ class TestDatabaseTables(unittest.TestCase):
         conn = sqlite3.connect('movies.db')
         cur = conn.cursor()
 
-        sql = 'SELECT CostumeName FROM Costume WHERE AgeGroupId = 1 '
+        sql = 'SELECT CostumeName FROM Costumes WHERE AgeGroupId = 1 '
         results = cur.execute(sql)
         result_list = results.fetchall()
         self.assertIn(('Princess',), result_list)
@@ -48,7 +49,7 @@ class TestDatabaseTables(unittest.TestCase):
 
 class TestDataAccess(unittest.TestCase):
     def test_tmdb_data_access(self):
-        self.assertIn('\"page\":5,', 'cache_tmdb.json')
+        self.assertIn('\"page\":5,', cache_tmdb.json)
         #call function, assert length of response > 0
 
     def test_scrape_data_access(self):
