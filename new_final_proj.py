@@ -5,10 +5,9 @@ import sys
 import codecs
 import sqlite3
 import csv
+import random
 from secrets import *
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
-#NEED VIRTUAL ENVIRONMENT - SEE LECTURE 23
-#re-generate your requirements.txt as a final step before submitting your project. Just in case.
 
 #Caching for TMDB data:
 try:
@@ -61,10 +60,8 @@ def get_tmdb_data():
     top_2016_movies.append(response_page_3)
     top_2016_movies.append(response_page_4)
     top_2016_movies.append(response_page_5)
-    #print(top_2016_movies)
 
 #get_tmdb_data()
-
 
 
 #Scraping:
@@ -90,6 +87,7 @@ def make_scrape_request_using_cache(url):
         fw.write(dumped_json_cache)
         fw.close()
         return CACHE_HTML[unique_ident]
+
 
 #Class:
 class HalloweenCostumes:
@@ -130,29 +128,8 @@ def scrape_halloween_costumes():
                     pass
                 my_writer.writerow((costume_text,header_text))
 
-            #course = [header_text, costume_text]
-        # new_list.append(header_list)
-        # new_list.append(costume_list)
-        # print(new_list)
-        #
-        # for row in new_list:
-        #     my_writer.writerow(row)
-
-
-        #my_writer.writerow("Costume Name, Age Group")
-        #
-        # for val in costume_list:
-        #     my_writer.writerow([val])
-        #
-        # for val in header_list:
-        #     my_writer.writerow([val])
-
-        #my_writer.writerow(header_list)
-        #my_writer.writerow(costume_list)
-
-    #costume = HalloweenCostumes(header=all_headers, costume_name=all_costumes)
-
 #scrape_halloween_costumes()
+
 
 #Reading data into new database:
 def init_db():
@@ -236,12 +213,11 @@ def insert_json_data():
         movie_dict2 = json.loads(movies)
         results = movie_dict2["results"]
         for movie in results:
-            #print(movie["title"])
-            #print("------------------------------")
             insertion = (None, movie['vote_average'], movie['title'], movie['popularity'], int(movie['vote_count']), movie['overview'], movie['release_date'])
             statement_json = 'INSERT INTO "Movies" '
             statement_json += 'VALUES (?, ?, ?, ?, ?, ?, ?) '
             cur.execute(statement_json, insertion)
+
     conn.commit()
     conn.close()
 
@@ -265,6 +241,7 @@ def insert_age_group_data():
         statement += 'VALUES (?, ?) '
         cur.execute(statement, insertion)
         conn.commit()
+
     conn.close()
 
 
@@ -292,7 +269,6 @@ def insert_csv_data():
 
     with open('costumes.csv', 'r', encoding = "latin-1") as csvDataFile:
         csvReader = csv.reader(csvDataFile)
-        # next(csvReader, None)
 
         for row in csvReader:
             if len(row) < 1:
@@ -303,7 +279,14 @@ def insert_csv_data():
             statement_csv += 'VALUES (?, ?, ?) '
             cur.execute(statement_csv, insertion)
             conn.commit()
+
         conn.close()
+
+
+
+
+
+
 
 init_db()
 insert_json_data()
@@ -311,21 +294,13 @@ insert_age_group_data()
 insert_csv_data()
 
 
-#Questions for Matt:
-#2. How to properly use Class for scraping?
-#3. what to use as primary/foreign key for database?
-    #3 tables: halloween costumes, movies, age_group
-    #reference age_group ID in halloween costume table
-    #age group table - hard code (make by self)
+
+
+
+
 
 
 #Plotly Bar Charts
-#Plan:
-    #Graph 1: 4 bars- 1 is the amount of superhero movies in list, 2 is number
-    #of superhero costumes in children costumes, 3 is for adults 18-34,
-    #4 is for adults 35+
-    #y-axis is percentage (percent of movies that are superhero, percent of )
-
 import plotly.plotly as py
 import plotly.graph_objs as go
 
@@ -361,13 +336,13 @@ def movies_average_ratings_graph():
     fig = go.Figure(data=data, layout=layout)
     py.plot(fig, filename='color-bar')
 
+
 def movies_most_popular_graph():
     movie_popularity = []
     movie_titles = []
 
     conn = sqlite3.connect('movies.db')
     cur = conn.cursor()
-    #query = "SELECT Popularity, Title FROM Movies LIMIT 10 "
     query = "SELECT Popularity, Title FROM Movies ORDER BY Popularity DESC LIMIT 10 "
 
     cur.execute(query)
@@ -392,6 +367,7 @@ def movies_most_popular_graph():
     fig = go.Figure(data=data, layout=layout)
     py.plot(fig, filename='color-bar')
 
+
 def movies_vote_count_graph():
     movie_votes = []
     movie_titles = []
@@ -399,7 +375,6 @@ def movies_vote_count_graph():
     conn = sqlite3.connect('movies.db')
     cur = conn.cursor()
     query = "SELECT VoteCount, Title FROM Movies ORDER BY VoteCount DESC LIMIT 10 "
-    #query = "SELECT VoteAverage, Title FROM Movies ORDER BY VoteAverage DESC LIMIT 10 "
     cur.execute(query)
 
     for x in cur:
@@ -425,16 +400,42 @@ def movies_vote_count_graph():
     fig = go.Figure(data=data, layout=layout)
     py.plot(fig, filename='color-bar')
 
-# def animal_graph():
-#     pass
-#
-# def political_graph():
-#     pass
+
+def costumes_graph():
+    number_occurrences = []
+    costume_names = []
+
+    conn = sqlite3.connect('movies.db')
+    cur = conn.cursor()
+    query = "SELECT CostumeName, Count(*) FROM Costumes Group By CostumeName Having Count(*) > 1 ORDER BY Count(*) DESC"
+    cur.execute(query)
+
+    for x in cur:
+        costume_names.append(x[0])
+        number_occurrences.append(x[1])
+
+    trace0 = go.Bar(
+    x=costume_names,
+    y=number_occurrences,
+    marker=dict(
+        color=['rgb(430,100,0)', 'black',
+               'rgb(430,100,0)', 'black',
+               'rgb(430,100,0)', 'black',
+               'rgb(430,100,0)', 'black',]),
+    )
+
+    data = [trace0]
+    layout = go.Layout(
+        title='Most Popular Halloween Costumes Across All Age Groups',
+    )
+
+    fig = go.Figure(data=data, layout=layout)
+    py.plot(fig, filename='color-bar')
 
 #movies_average_ratings_graph()
 #movies_most_popular_graph()
 #movies_vote_count_graph()
-
+#costumes_graph()
 
 #Interactive Command Line:
 print("----------------------------------------------------------")
@@ -446,19 +447,23 @@ while user_input != 'exit':
     #First data visualization:
     if user_input == "graph top 10 movies ratings":
         movies_average_ratings_graph()
-#         print graph superhero
-#         print graph princess
-#         print graph animal
-#         print graph political
+
     #Second data visualization:
     elif user_input == "graph top 10 movies popularity":
         movies_most_popular_graph()
+
     #Third data visualization:
     elif user_input == "graph top 10 movies vote count":
         movies_vote_count_graph()
-    #Fourth Data Visualization:
+
+    #Fourth data visualization:
+    elif user_input == "graph popular costumes":
+        costumes_graph()
+
+
     elif 'movies' in user_input[0:6]:
-        result_number = str(user_input[7])
+        result_number = int(user_input[7:])
+        #print(result_number)
         movies_list = []
         conn = sqlite3.connect('movies.db')
         cur = conn.cursor()
@@ -467,10 +472,12 @@ while user_input != 'exit':
 
         for x in cur:
             movies_list.append(x[0])
+        print(movies_list[3])
 
-        movies_list = movies_list[result_number]
+        # movies_list = movies_list[result_number]
+        # print(movies_list)
 
-        for x in range(len(movies_list)):
+        for x in range(len(movies_list[(result_number)])):
             print(str(x + 1) + ". " + movies_list[x].__str__())
 
         print("\n")
@@ -541,17 +548,44 @@ while user_input != 'exit':
 
         print("\n")
 
+    elif user_input == "show me a pun":
+        list_of_puns = []
+        pun1 = "Why doesn't Dracula have any friends? Because he's a pain in the neck."
+        pun2 = "What kind of music do mummies listen to? Wrap."
+        pun3 = "Where does Dracula keep his savings? At the blood bank."
+        pun4 = "What's a vampire's favorite fruit? A neck-tarine."
+        pun5 = "What happened to the guy who didn't pay his exorcist? He got repossessed."
+        pun6 = "What's a monster's favorite play? Romeo and Ghoul-iet."
+
+        list_of_puns.append(pun1)
+        list_of_puns.append(pun2)
+        list_of_puns.append(pun3)
+        list_of_puns.append(pun4)
+        list_of_puns.append(pun5)
+        list_of_puns.append(pun6)
+
+        print(random.choice(list_of_puns))
+        print("\n")
+
     elif 'help' in user_input[0:4]:
-        #print("Enter 'graph' and 'superhero', 'princess', 'animal', or 'political' to see the graph for respective movies and costumes. ")
-        print("Enter 'movie' and a number to see the most popular movies for 2016. ")
-        print("Enter 'costume' and a group name to see the top ten costumes for that group. ")
+        print("Enter 'graph top 10 movies ratings' to see a graph of the top ten movies of 2016 grouped by average rating. ")
+        print("Enter 'graph top 10 movies popularity' to see a graph of the top ten movies of 2016 grouped by popularity score. ")
+        print("Enter 'graph top 10 movies vote count' to see a graph of the top ten movies of 2016 grouped by the amount of received votes. ")
+        print("Enter 'graph popular costumes' to see a graph of Halloween costumes that were common (popular) across multiple age groups. ")
+        print("Enter 'movie' and a number to see that many of the most popular movies for 2016. ")
+        print("Enter 'costumes' and an age group name to see the top ten costumes for that group. ")
+        print("Enter 'show me a pun' for a spooky joke!")
+        print("Enter 'help' to see these options. ")
         print("Enter 'exit' to end the program. ")
-        break
-        #print a list of possible commands + explanations
+        print("\n")
+
     elif user_input == "exit":
         print("Bye!")
         break
+
     else:
-        print("I'm sorry, I don't understand. Please enter a valid command. ")
+        print("I'm sorry, I don't understand. Please enter a valid command (Enter 'help' for options). ")
+        print("\n")
 
     user_input = input("Please enter a command or 'help' for more options: ")
+    print("\n")
