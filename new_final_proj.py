@@ -9,6 +9,7 @@ import random
 from secrets import *
 sys.stdout = codecs.getwriter('utf-8')(sys.stdout.buffer)
 
+
 #Caching for TMDB data:
 try:
     cache_file = open('cache_tmdb.json', 'r')
@@ -64,7 +65,7 @@ def get_tmdb_data():
 #get_tmdb_data()
 
 
-#Scraping:
+#Scraping cache:
 try:
     cache_file = open("cache_halloween.json", 'r')
     cache_contents = cache_file.read()
@@ -95,11 +96,10 @@ class HalloweenCostumes:
         self.header = header
         self.costume_name = costume_name
 
+#Obtaining data and scraping:
 def scrape_halloween_costumes():
     header_list = []
     costume_list = []
-
-    new_list = []
 
     base_url = "https://nrf.com/media/press-releases/trading-crowns-capes-superhero-is-top-choice-halloween"
     main_page_text = make_scrape_request_using_cache(base_url)
@@ -283,21 +283,10 @@ def insert_csv_data():
         conn.close()
 
 
-
-
-
-
-
 init_db()
 insert_json_data()
 insert_age_group_data()
 insert_csv_data()
-
-
-
-
-
-
 
 
 #Plotly Bar Charts
@@ -437,12 +426,17 @@ def costumes_graph():
 #movies_vote_count_graph()
 #costumes_graph()
 
+
 #Interactive Command Line:
+print("----------------------------------------------------------")
 print("----------------------------------------------------------")
 print("-------------- Welcome to my final project! --------------")
 print("----------------------------------------------------------")
+print("----------------------------------------------------------")
+print("\n")
 
 user_input = input("Please enter a command or 'help' for more options: ")
+print("\n")
 while user_input != 'exit':
     #First data visualization:
     if user_input == "graph top 10 movies ratings":
@@ -462,7 +456,7 @@ while user_input != 'exit':
 
 
     elif 'movies' in user_input[0:6]:
-        result_number = int(user_input[7:])
+        result_number = str(user_input[7:])
         #print(result_number)
         movies_list = []
         conn = sqlite3.connect('movies.db')
@@ -472,17 +466,12 @@ while user_input != 'exit':
 
         for x in cur:
             movies_list.append(x[0])
-        print(movies_list[3])
 
-        # movies_list = movies_list[result_number]
-        # print(movies_list)
-
-        for x in range(len(movies_list[(result_number)])):
+        for x in range(int(result_number)):
             print(str(x + 1) + ". " + movies_list[x].__str__())
 
         print("\n")
 
-        #print top however many movies the user wants
 
     elif user_input == "costumes children":
         childrens_costumes = []
@@ -572,7 +561,7 @@ while user_input != 'exit':
         print("Enter 'graph top 10 movies popularity' to see a graph of the top ten movies of 2016 grouped by popularity score. ")
         print("Enter 'graph top 10 movies vote count' to see a graph of the top ten movies of 2016 grouped by the amount of received votes. ")
         print("Enter 'graph popular costumes' to see a graph of Halloween costumes that were common (popular) across multiple age groups. ")
-        print("Enter 'movie' and a number to see that many of the most popular movies for 2016. ")
+        print("Enter 'movies' and a number to see that many of the most popular movies for 2016. ")
         print("Enter 'costumes' and an age group name to see the top ten costumes for that group. ")
         print("Enter 'show me a pun' for a spooky joke!")
         print("Enter 'help' to see these options. ")
