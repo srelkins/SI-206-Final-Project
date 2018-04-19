@@ -41,7 +41,20 @@ respective JSON and CSV files to write to the Costume, AgeGroup, and Movie table
 I use Plotly to create four graphs with data from the database. Finally, I create my
 interactive command line to prompt the user for input.
 
+Important processing functions include get_tmdb_data, which I user to obtain data from the
+TMDB API, scrape_halloween_costumes, which I use to obtain data from the web page, init_db,
+which I user to define the database and tables, then three separate functions write the
+web data to each of my three database tables, then four functions are used to make the
+Plotly graph for my interactive command line, and these graphs are called depending on the
+user's input in the interactive command line.
+
 A HalloweenCostumes class is written for the scraped data (from the Halloween Costumes website).
 
-To create my cache file for the API data and scraped data, I wrote all of the data to a
-dictionary for each data source and that dictionary contains all of the data in the cache file.
+To create my cache file for the API data and scraped data, I wrote a cache function to
+input the data into a cache file, and each file contains a dictionary with the data from the
+API and the scraped web page, respectively.
+
+A dictionary is used to map the foreign key onto the Costumes table in my database.
+
+To choose presentation options, enter "help" in the command line to see a list of graph options
+and what to input to see those graphs and other visualizations.
