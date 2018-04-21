@@ -1,14 +1,5 @@
 import unittest
 from new_final_proj import *
-#from cache_tmdb.json import *
-
-#what to do for rest of test cases? ANSWERED: from database is fine
-#are graphs okay? (they're different from my proposal)
-    #add another for costumes- costumes that appear in more than one group
-    #graph doesn't cover all costumes (Batman character has more than one name)
-#class? would lose 5 points at most
-#interactive 'movies' command?
-#anything else wrong with any of my code?
 
 class TestDatabaseTables(unittest.TestCase):
     def test_movies_table(self):
@@ -105,8 +96,5 @@ class TestDatabaseTables(unittest.TestCase):
 #             self.assertIn("Deadpool", movie_titles)
 #
 #             self.assertIn("sdklfjsd;lf", movie_titles)
-#
-#     def test_graphs_returned(self):
-#         pass
 
 unittest.main(verbosity=2)
